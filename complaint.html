@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaints | Smart Billing System</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f2f6fc;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .navbar {
+      background: linear-gradient(90deg, #0077b6, #0096c7);
+      padding: 15px 25px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+    }
+    .navbar-brand, .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+
+    .glass-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.10);
+      animation: fadeInUp 0.4s ease-out;
+    }
+
+    table thead {
+      background: #0096c7;
+      color: white;
+    }
+
+    tbody tr:hover {
+      background: #eef8ff;
+      transform: scale(1.01);
+      transition: 0.2s ease-in-out;
+    }
+
+    .btn-submit {
+      background: linear-gradient(90deg, #0077b6, #0096c7);
+      color: white;
+      height: 45px;
+      font-weight: 500;
+      border-radius: 10px;
+    }
+    .btn-submit:hover {
+      background: #006095;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand fw-bold" href="/user-dashboard.html">⚡ Smart Billing</a>
+
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="/user-dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="/bill-history.html">Bill History</a></li>
+      <li class="nav-item"><a class="nav-link active" href="/complaint.html">Complaints</a></li>
+      <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="container py-5">
+  <div class="row g-4 justify-content-center">
+
+    <div class="col-md-4">
+      <div class="glass-card">
+        <h4 class="fw-bold text-center mb-3 text-primary">📝 Submit Complaint</h4>
+
+        <form action="/submit-complaint" method="POST">
+          <label class="form-label fw-semibold">Complaint Type</label>
+          <select name="complaint_type" class="form-select mb-3" required>
+            <option value="" disabled selected>Select type</option>
+            <option>Billing Issue</option>
+            <option>Meter Fault</option>
+            <option>Power Outage</option>
+            <option>New Connection</option>
+            <option>Other</option>
+          </select>
+
+          <label class="form-label fw-semibold">Description</label>
+          <textarea name="complaint_text" class="form-control mb-3"
+            placeholder="Describe your issue..." rows="4" required></textarea>
+
+          <button type="submit" class="btn btn-submit w-100">Submit</button>
+        </form>
+      </div>
+    </div>
+
+
+    <div class="col-md-7">
+      <div class="glass-card">
+        <h4 class="fw-bold text-center mb-3 text-primary">📋 Complaint History</h4>
+
+        <table class="table table-hover text-center align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Response</th>
+            </tr>
+          </thead>
+
+          <tbody>
+{% if complaints %}
+  {% for c in complaints %}
+    <tr>
+      <td>{{ c[0] }}</td>     <!-- complaint_id -->
+      <td>{{ c[1] }}</td>     <!-- subject -->
+      <td>{{ c[2].strftime('%d-%m-%Y') }}</td> <!-- created_at -->
+
+      <td>
+        {% if c[3] == "resolved" %}
+          <span class="badge bg-success">Resolved</span>
+        {% else %}
+          <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+      </td>
+
+      <td>{{ c[4] }}</td>     <!-- description -->
+    </tr>
+  {% endfor %}
+{% else %}
+  <tr>
+    <td colspan="5" class="text-muted">No complaints submitted yet.</td>
+  </tr>
+{% endif %}
+</tbody>
+
+
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

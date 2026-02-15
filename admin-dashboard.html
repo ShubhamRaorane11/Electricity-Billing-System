@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Smart Electricity Billing System</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+    .navbar {
+      background-color: #0077b6;
+    }
+    .navbar-brand, .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 20px;
+    }
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ Navbar -->
+<nav class="navbar navbar-expand-lg px-4">
+  <a class="navbar-brand fw-bold">⚡ Admin Panel</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link active" href="/admin-dashboard.html">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+  </ul>
+</nav>
+
+<div class="container py-5">
+
+  <h2 class="fw-bold text-center mb-4 text-primary">Admin Dashboard Overview</h2>
+  <a href="/add-user-page" class="btn btn-success mb-3">➕ Add New User</a>
+  <a href="/add-bill-page" class="btn btn-primary mb-3">➕ Add Bill</a>
+
+
+  <!-- ✅ Dynamic Summary Cards -->
+  <div class="dashboard-cards">
+    <div class="card p-3 text-center">
+      <h5>Total Users</h5>
+      <h2 class="fw-bold text-success">{{ total_users }}</h2>
+    </div>
+    <div class="card p-3 text-center">
+      <h5>Total Bills</h5>
+      <h2 class="fw-bold text-primary">{{ total_bills }}</h2>
+    </div>
+    <div class="card p-3 text-center">
+      <h5>Pending Complaints</h5>
+      <h2 class="fw-bold text-warning">{{ pending_complaints }}</h2>
+    </div>
+  </div>
+
+  <!-- ✅ Complaint Management -->
+<div class="mt-5 card p-4">
+  <h5 class="mb-3">🛠 Complaint Management</h5>
+
+  <table class="table table-hover text-center align-middle">
+    <thead class="table-primary">
+      <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+<tbody>
+{% for c in complaints %}
+<tr>
+    <td>{{ c[0] }}</td>        <!-- Complaint ID -->
+    <td>{{ c[5] }}</td>        <!-- User Name -->
+    <td>{{ c[1] }}</td>        <!-- Subject -->
+    <td>{{ c[2] }}</td>        <!-- Description -->
+    <td>{{ c[4].strftime('%d-%m-%Y') }}</td> <!-- Date -->
+
+    <td>
+        {% if c[3] == "resolved" %}
+        <span class="badge bg-success">Resolved</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">Open</span>
+        {% endif %}
+    </td>
+
+    <td>
+        {% if c[3] != "resolved" %}
+        <button class="btn btn-sm btn-outline-success"
+                onclick="openReplyModal('{{ c[0] }}')">
+            Reply & Resolve
+        </button>
+        {% else %}
+        <span class="text-muted">Done</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+
+  </table>
+</div>
+
+
+<!-- ✅ Admin Reply Popup Modal -->
+<div class="modal fade" id="replyModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form action="/resolve-complaint" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Reply to Complaint</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" name="complaint_id" id="complaintIdField">
+
+          <label class="form-label fw-semibold">Response Message</label>
+          <textarea name="response" class="form-control" rows="4"
+            placeholder="Type your reply..." required></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Send Reply & Resolve ✅</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function openReplyModal(complaintId) {
+  document.getElementById("complaintIdField").value = complaintId;
+  new bootstrap.Modal(document.getElementById("replyModal")).show();
+}
+</script>
+
+</body>
+</html>
